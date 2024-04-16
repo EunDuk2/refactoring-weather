@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		61C1CA882BCD585500932E4A /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C1CA872BCD585500932E4A /* WeatherViewController.swift */; };
+		61C1CA8A2BCD586900932E4A /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C1CA892BCD586900932E4A /* WeatherView.swift */; };
 		C741F6702B58F00500A4DDC0 /* Weather.swift in Sources */ = {isa = PBXBuildFile; fileRef = C741F66F2B58F00500A4DDC0 /* Weather.swift */; };
 		C7743D8D2B21C38100DF0D09 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7743D8C2B21C38100DF0D09 /* AppDelegate.swift */; };
 		C7743D8F2B21C38100DF0D09 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7743D8E2B21C38100DF0D09 /* SceneDelegate.swift */; };
@@ -19,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		61C1CA872BCD585500932E4A /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
+		61C1CA892BCD586900932E4A /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
 		C741F66F2B58F00500A4DDC0 /* Weather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather.swift; sourceTree = "<group>"; };
 		C7743D892B21C38100DF0D09 /* WeatherForecast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherForecast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7743D8C2B21C38100DF0D09 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +70,8 @@
 				C7743D8E2B21C38100DF0D09 /* SceneDelegate.swift */,
 				C7743DA02B21C3B400DF0D09 /* WeatherTableViewCell.swift */,
 				C7743D902B21C38100DF0D09 /* ViewController.swift */,
+				61C1CA892BCD586900932E4A /* WeatherView.swift */,
+				61C1CA872BCD585500932E4A /* WeatherViewController.swift */,
 				C741F66F2B58F00500A4DDC0 /* Weather.swift */,
 				C7743DA22B21CA8500DF0D09 /* WeatherDetailViewController.swift */,
 				C7743D922B21C38100DF0D09 /* Main.storyboard */,
@@ -151,8 +157,10 @@
 				C7743D912B21C38100DF0D09 /* ViewController.swift in Sources */,
 				C7743D8D2B21C38100DF0D09 /* AppDelegate.swift in Sources */,
 				C7743DA32B21CA8600DF0D09 /* WeatherDetailViewController.swift in Sources */,
+				61C1CA882BCD585500932E4A /* WeatherViewController.swift in Sources */,
 				C741F6702B58F00500A4DDC0 /* Weather.swift in Sources */,
 				C7743D8F2B21C38100DF0D09 /* SceneDelegate.swift in Sources */,
+				61C1CA8A2BCD586900932E4A /* WeatherView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
