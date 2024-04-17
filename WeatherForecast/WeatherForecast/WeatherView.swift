@@ -11,7 +11,9 @@ protocol WeatherViewDelegate {
     func setNavigationItem(buttonItem: UIBarButtonItem)
     func changeTempUnit()
     func refresh()
-    func setTableViewDelegate(view: WeatherView)
+    func cellCount() -> Int
+    func setCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell
+    func didSelectRow(tableView: UITableView, indexPath: IndexPath)
 }
 
 class WeatherView: UIView {
@@ -32,10 +34,6 @@ class WeatherView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func getTableView() -> UITableView {
-        return self.tableView
-    }
-    
     private func initialSetUp() {
         delegate.setNavigationItem(buttonItem: UIBarButtonItem(title: "화씨", image: nil, target: self, action: #selector(onBarButton)))
         
@@ -48,9 +46,8 @@ class WeatherView: UIView {
         tableView.refreshControl = refreshControl
         tableView.register(WeatherTableViewCell.self, forCellReuseIdentifier: "WeatherCell")
         
-        delegate.setTableViewDelegate(view: self)
-//        tableView.dataSource = self
-//        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.delegate = self
     }
     
     @objc private func onBarButton() {
@@ -81,29 +78,22 @@ class WeatherView: UIView {
     }
 }
 
-//extension WeatherView: UITableViewDataSource {
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        return 1
-//    }
-//    
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-////        weatherJSON?.weatherForecast.count ?? 0
-//        return 10
-//    }
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "WeatherCell", for: indexPath)
-//        
-//        guard let cell: WeatherTableViewCell = cell as? WeatherTableViewCell else {
-//            return cell
-//        }
-//        
-//        cell.dateLabel.text = "eunduk"
-//        
-//        return cell
-//    }
-//}
-//
-//extension WeatherView: UITableViewDelegate {
-//    
-//}
+extension WeatherView: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return delegate.cellCount()
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return delegate.setCell(tableView: tableView, indexPath: indexPath)
+    }
+}
+
+extension WeatherView: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        delegate.didSelectRow(tableView: tableView, indexPath: indexPath)
+    }
+}
