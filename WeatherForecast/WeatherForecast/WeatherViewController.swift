@@ -21,12 +21,11 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
     }
     
     override func loadView() {
         view = WeatherView(delegate: self)
-        
+        refresh()
     }
     
     func setNavigationItem(buttonItem: UIBarButtonItem) {
@@ -34,7 +33,6 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     }
     
     func cellCount() -> Int {
-        refresh()
         return weatherJSON?.weatherForecast.count ?? 0
     }
     
@@ -96,32 +94,40 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
             tempUnit = .imperial
             navigationItem.rightBarButtonItem?.title = "화씨"
         }
-//        refresh()
+        
     }
     func refresh() {
-        fetchWeatherJSON()
+        guard let json = decodeWeatherJSON(dataName: "weather") else {
+            return
+        }
+        weatherJSON = json
+        setTitle(titleText: (weatherJSON?.city.name)!)
+    }
+    func setTitle(titleText: String) {
+        navigationItem.title = titleText
     }
 }
 
 extension WeatherViewController {
-    private func fetchWeatherJSON() {
-        
+    private func fetchWeatherJSON(dataName: String) -> Data? {
+        guard let data = NSDataAsset(name: dataName)?.data else {
+            return nil
+        }
+        return data
+    }
+    
+    private func decodeWeatherJSON(dataName: String) -> WeatherJSON? {
         let jsonDecoder: JSONDecoder = .init()
         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
 
-        guard let data = NSDataAsset(name: "weather")?.data else {
-            return
+        guard let data = fetchWeatherJSON(dataName: dataName) else {
+            return nil
         }
-        
-        let info: WeatherJSON
         do {
-            info = try jsonDecoder.decode(WeatherJSON.self, from: data)
+            return try jsonDecoder.decode(WeatherJSON.self, from: data)
         } catch {
             print(error.localizedDescription)
-            return
+            return nil
         }
-
-        weatherJSON = info
-        navigationItem.title = weatherJSON?.city.name
     }
 }
