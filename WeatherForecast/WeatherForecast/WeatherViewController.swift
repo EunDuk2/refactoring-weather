@@ -28,8 +28,56 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
         refresh()
     }
     
+    func setTitle(titleText: String) {
+        navigationItem.title = titleText
+    }
+    
+    private func convertTimeToDateString(timeInterval: TimeInterval) -> String {
+        let date: Date = Date(timeIntervalSince1970: timeInterval)
+        return dateFormatter.string(from: date)
+    }
+    
+    private func setImageFromURL(icon: String, imageView: UIImageView) {
+        let urlString: String = "https://openweathermap.org/img/wn/\(icon)@2x.png"
+
+        if let image = imageChache.object(forKey: urlString as NSString) {
+            imageView.image = image
+        }
+
+        Task {
+            guard let url: URL = URL(string: urlString),
+                  let (data, _) = try? await URLSession.shared.data(from: url),
+                  let image: UIImage = UIImage(data: data) else {
+                return
+            }
+            imageChache.setObject(image, forKey: urlString as NSString)
+            imageView.image = image
+        }
+    }
+    
+    // protocol function
     func setNavigationItem(buttonItem: UIBarButtonItem) {
         navigationItem.rightBarButtonItem = buttonItem
+    }
+    
+    func changeTempUnit() {
+        switch tempUnit {
+        case .imperial:
+            tempUnit = .metric
+            navigationItem.rightBarButtonItem?.title = "섭씨"
+        case .metric:
+            tempUnit = .imperial
+            navigationItem.rightBarButtonItem?.title = "화씨"
+        }
+        
+    }
+    
+    func refresh() {
+        guard let json = decodeWeatherJSON(dataName: "weather") else {
+            return
+        }
+        weatherJSON = json
+        setTitle(titleText: (weatherJSON?.city.name)!)
     }
     
     func cellCount() -> Int {
@@ -47,31 +95,9 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
         cell.weatherLabel.text = weatherForecastInfo.weather.main
         cell.descriptionLabel.text = weatherForecastInfo.weather.description
         cell.temperatureLabel.text = "\(weatherForecastInfo.main.temp)\(tempUnit.expression)"
+        cell.dateLabel.text = convertTimeToDateString(timeInterval: weatherForecastInfo.dt)
+        setImageFromURL(icon: weatherForecastInfo.weather.icon, imageView: cell.weatherIcon)
 
-        let date: Date = Date(timeIntervalSince1970: weatherForecastInfo.dt)
-        cell.dateLabel.text = dateFormatter.string(from: date)
-
-        let iconName: String = weatherForecastInfo.weather.icon
-        let urlString: String = "https://openweathermap.org/img/wn/\(iconName)@2x.png"
-
-        if let image = imageChache.object(forKey: urlString as NSString) {
-            cell.weatherIcon.image = image
-            return cell
-        }
-
-        Task {
-            guard let url: URL = URL(string: urlString),
-                  let (data, _) = try? await URLSession.shared.data(from: url),
-                  let image: UIImage = UIImage(data: data) else {
-                return
-            }
-
-            imageChache.setObject(image, forKey: urlString as NSString)
-
-            if indexPath == tableView.indexPath(for: cell) {
-                cell.weatherIcon.image = image
-            }
-        }
         return cell
     }
     
@@ -83,28 +109,6 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
         detailViewController.cityInfo = weatherJSON?.city
         detailViewController.tempUnit = tempUnit
         navigationController?.show(detailViewController, sender: self)
-    }
-    
-    func changeTempUnit() {
-        switch tempUnit {
-        case .imperial:
-            tempUnit = .metric
-            navigationItem.rightBarButtonItem?.title = "섭씨"
-        case .metric:
-            tempUnit = .imperial
-            navigationItem.rightBarButtonItem?.title = "화씨"
-        }
-        
-    }
-    func refresh() {
-        guard let json = decodeWeatherJSON(dataName: "weather") else {
-            return
-        }
-        weatherJSON = json
-        setTitle(titleText: (weatherJSON?.city.name)!)
-    }
-    func setTitle(titleText: String) {
-        navigationItem.title = titleText
     }
 }
 
