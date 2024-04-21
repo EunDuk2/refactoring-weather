@@ -6,7 +6,7 @@
 
 import UIKit
 
-class WeatherDetailViewController: UIViewController, WeatherDetailViewDelegate {
+class WeatherDetailViewController: UIViewController, WeatherDetailViewDelegate, WeatherDetailPresentable {
     
     var weatherForecastInfo: WeatherForecastInfo?
     var cityInfo: City?
@@ -76,5 +76,21 @@ class WeatherDetailViewController: UIViewController, WeatherDetailViewDelegate {
             sunsetTimeLabel.text = "일몰 : \(cityDateFormatter().string(from: Date(timeIntervalSince1970: cityInfo.sunset)))"
         }
         setIconImage(icon: listInfo.weather.icon, iconImageView: iconImageView)
+    }
+    
+    func setWeatherForecastInfo(weatherForecaseInfo: WeatherForecastInfo?) {
+        self.weatherForecastInfo = weatherForecaseInfo
+    }
+    
+    func setCityInfo(cityInfo: City?) {
+        self.cityInfo = cityInfo
+    }
+    
+    func setTempUnit(tempUnit: TempUnit) {
+        self.tempUnit = tempUnit
+    }
+    
+    func showDetailViewController(on navigationController: UINavigationController?) {
+        navigationController?.show(self, sender: self)
     }
 }

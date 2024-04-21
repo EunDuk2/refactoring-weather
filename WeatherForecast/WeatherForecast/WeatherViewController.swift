@@ -7,6 +7,13 @@
 
 import UIKit
 
+protocol WeatherDetailPresentable {
+    func setWeatherForecastInfo(weatherForecaseInfo: WeatherForecastInfo?)
+    func setCityInfo(cityInfo: City?)
+    func setTempUnit(tempUnit: TempUnit)
+    func showDetailViewController(on navigationController: UINavigationController?)
+}
+
 class WeatherViewController: UIViewController, WeatherViewDelegate {
     private var weatherJSON: WeatherJSON?
     private var tempUnit: TempUnit = .metric
@@ -17,6 +24,17 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
         formatter.dateFormat = "yyyy-MM-dd(EEEEE) a HH:mm"
         return formatter
     }()
+    
+    private let presentable: WeatherDetailPresentable
+    
+    init(presentable: WeatherDetailPresentable) {
+        self.presentable = presentable
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,12 +121,11 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     
     func didSelectRow(tableView: UITableView, indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-
-        let detailViewController: WeatherDetailViewController = WeatherDetailViewController()
-        detailViewController.weatherForecastInfo = weatherJSON?.weatherForecast[indexPath.row]
-        detailViewController.cityInfo = weatherJSON?.city
-        detailViewController.tempUnit = tempUnit
-        navigationController?.show(detailViewController, sender: self)
+        
+        presentable.setWeatherForecastInfo(weatherForecaseInfo: weatherJSON?.weatherForecast[indexPath.row])
+        presentable.setCityInfo(cityInfo: weatherJSON?.city)
+        presentable.setTempUnit(tempUnit: tempUnit)
+        presentable.showDetailViewController(on: navigationController)
     }
 }
 
