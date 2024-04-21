@@ -6,8 +6,8 @@
 
 import UIKit
 
-class WeatherDetailViewController: UIViewController {
-
+class WeatherDetailViewController: UIViewController, WeatherDetailViewDelegate {
+    
     var weatherForecastInfo: WeatherForecastInfo?
     var cityInfo: City?
     var tempUnit: TempUnit = .metric
@@ -21,77 +21,46 @@ class WeatherDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initialSetUp()
+        setNavigationTitle()
     }
     
-    private func initialSetUp() {
-        view.backgroundColor = .white
-        
+    override func loadView() {
+        view = WeatherDetailView(delegate: self)
+    }
+    
+    private func setNavigationTitle() {
         guard let listInfo = weatherForecastInfo else { return }
         
         let date: Date = Date(timeIntervalSince1970: listInfo.dt)
         navigationItem.title = dateFormatter.string(from: date)
+    }
+    
+    private func cityDateFormatter() -> DateFormatter {
+        let formatter: DateFormatter = DateFormatter()
+        formatter.dateFormat = .none
+        formatter.timeStyle = .short
+        formatter.locale = .init(identifier: "ko_KR")
         
-        let iconImageView: UIImageView = UIImageView()
-        let weatherGroupLabel: UILabel = UILabel()
-        let weatherDescriptionLabel: UILabel = UILabel()
-        let temperatureLabel: UILabel = UILabel()
-        let feelsLikeLabel: UILabel = UILabel()
-        let maximumTemperatureLable: UILabel = UILabel()
-        let minimumTemperatureLable: UILabel = UILabel()
-        let popLabel: UILabel = UILabel()
-        let humidityLabel: UILabel = UILabel()
-        let sunriseTimeLabel: UILabel = UILabel()
-        let sunsetTimeLabel: UILabel = UILabel()
-        let spacingView: UIView = UIView()
-        spacingView.backgroundColor = .clear
-        spacingView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        
-        let mainStackView: UIStackView = .init(arrangedSubviews: [
-            iconImageView,
-            weatherGroupLabel,
-            weatherDescriptionLabel,
-            temperatureLabel,
-            feelsLikeLabel,
-            maximumTemperatureLable,
-            minimumTemperatureLable,
-            popLabel,
-            humidityLabel,
-            sunriseTimeLabel,
-            sunsetTimeLabel,
-            spacingView
-        ])
-                
-        mainStackView.arrangedSubviews.forEach { subview in
-            guard let subview: UILabel = subview as? UILabel else { return }
-            subview.textColor = .black
-            subview.backgroundColor = .clear
-            subview.numberOfLines = 1
-            subview.textAlignment = .center
-            subview.font = .preferredFont(forTextStyle: .body)
+        return formatter
+    }
+    
+    private func setIconImage(icon:String, iconImageView: UIImageView) {
+        Task {
+            let urlString: String = "https://openweathermap.org/img/wn/\(icon)@2x.png"
+
+            guard let url: URL = URL(string: urlString),
+                  let (data, _) = try? await URLSession.shared.data(from: url),
+                  let image: UIImage = UIImage(data: data) else {
+                return
+            }
+
+            iconImageView.image = image
         }
-        
-        weatherGroupLabel.font = .preferredFont(forTextStyle: .largeTitle)
-        weatherDescriptionLabel.font = .preferredFont(forTextStyle: .largeTitle)
-        
-        mainStackView.axis = .vertical
-        mainStackView.alignment = .center
-        mainStackView.spacing = 8
-        view.addSubview(mainStackView)
-        mainStackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let safeArea: UILayoutGuide = view.safeAreaLayoutGuide
-        NSLayoutConstraint.activate([
-            mainStackView.topAnchor.constraint(equalTo: safeArea.topAnchor),
-            mainStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor),
-            mainStackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor,
-                                                   constant: 16),
-            mainStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor,
-                                                   constant: -16),
-            iconImageView.widthAnchor.constraint(equalTo: iconImageView.heightAnchor),
-            iconImageView.widthAnchor.constraint(equalTo: safeArea.widthAnchor,
-                                                 multiplier: 0.3)
-        ])
+    }
+    
+    // protocol function
+    func setValue(weatherGroupLabel: UILabel, weatherDescriptionLabel: UILabel, temperatureLabel: UILabel, feelsLikeLabel: UILabel, maximumTemperatureLable: UILabel, minimumTemperatureLable: UILabel, popLabel: UILabel, humidityLabel: UILabel, sunriseTimeLabel: UILabel, sunsetTimeLabel: UILabel, iconImageView: UIImageView) {
+        guard let listInfo = weatherForecastInfo else { return }
         
         weatherGroupLabel.text = listInfo.weather.main
         weatherDescriptionLabel.text = listInfo.weather.description
@@ -103,25 +72,9 @@ class WeatherDetailViewController: UIViewController {
         humidityLabel.text = "습도 : \(listInfo.main.humidity)%"
         
         if let cityInfo {
-            let formatter: DateFormatter = DateFormatter()
-            formatter.dateFormat = .none
-            formatter.timeStyle = .short
-            formatter.locale = .init(identifier: "ko_KR")
-            sunriseTimeLabel.text = "일출 : \(formatter.string(from: Date(timeIntervalSince1970: cityInfo.sunrise)))"
-            sunsetTimeLabel.text = "일몰 : \(formatter.string(from: Date(timeIntervalSince1970: cityInfo.sunset)))"
+            sunriseTimeLabel.text = "일출 : \(cityDateFormatter().string(from: Date(timeIntervalSince1970: cityInfo.sunrise)))"
+            sunsetTimeLabel.text = "일몰 : \(cityDateFormatter().string(from: Date(timeIntervalSince1970: cityInfo.sunset)))"
         }
-        
-        Task {
-            let iconName: String = listInfo.weather.icon
-            let urlString: String = "https://openweathermap.org/img/wn/\(iconName)@2x.png"
-
-            guard let url: URL = URL(string: urlString),
-                  let (data, _) = try? await URLSession.shared.data(from: url),
-                  let image: UIImage = UIImage(data: data) else {
-                return
-            }
-            
-            iconImageView.image = image
-        }
+        setIconImage(icon: listInfo.weather.icon, iconImageView: iconImageView)
     }
 }

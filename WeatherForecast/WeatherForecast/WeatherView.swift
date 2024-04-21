@@ -35,6 +35,7 @@ class WeatherView: UIView {
     }
     
     private func initialSetUp() {
+        self.backgroundColor = .white
         delegate.setNavigationItem(buttonItem: UIBarButtonItem(title: "화씨", image: nil, target: self, action: #selector(onBarButton)))
         
         layTable()
