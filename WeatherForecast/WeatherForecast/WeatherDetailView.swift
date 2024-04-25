@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol WeatherDetailViewDelegate {
+protocol WeatherDetailViewDelegate: class {
     func setValue(weatherGroupLabel: UILabel, weatherDescriptionLabel: UILabel, temperatureLabel: UILabel, feelsLikeLabel: UILabel, maximumTemperatureLable: UILabel, minimumTemperatureLable: UILabel, popLabel: UILabel, humidityLabel: UILabel, sunriseTimeLabel: UILabel, sunsetTimeLabel: UILabel, iconImageView: UIImageView)
 }
 
@@ -25,7 +25,12 @@ class WeatherDetailView: UIView {
     private let sunsetTimeLabel: UILabel = UILabel()
     private let spacingView: UIView = UIView()
     
-    private var delegate: WeatherDetailViewDelegate
+    private weak var delegate: WeatherDetailViewDelegate?
+    
+    // 다음에 swift 5.10으로 업데이트 후 nested protocol 적용해보겠습니다.
+//    protocol WeatherDetailViewDelegate2 {
+//        
+//    }
     
     init(delegate: WeatherDetailViewDelegate) {
         self.delegate = delegate
@@ -50,7 +55,7 @@ class WeatherDetailView: UIView {
     }
     
     func setValue() {
-        delegate.setValue(weatherGroupLabel: self.weatherGroupLabel, weatherDescriptionLabel: self.weatherDescriptionLabel, temperatureLabel: self.temperatureLabel, feelsLikeLabel: self.feelsLikeLabel, maximumTemperatureLable: self.maximumTemperatureLable, minimumTemperatureLable: self.minimumTemperatureLable, popLabel: self.popLabel, humidityLabel: self.humidityLabel, sunriseTimeLabel: self.sunriseTimeLabel, sunsetTimeLabel: self.sunsetTimeLabel, iconImageView: self.iconImageView)
+        delegate?.setValue(weatherGroupLabel: self.weatherGroupLabel, weatherDescriptionLabel: self.weatherDescriptionLabel, temperatureLabel: self.temperatureLabel, feelsLikeLabel: self.feelsLikeLabel, maximumTemperatureLable: self.maximumTemperatureLable, minimumTemperatureLable: self.minimumTemperatureLable, popLabel: self.popLabel, humidityLabel: self.humidityLabel, sunriseTimeLabel: self.sunriseTimeLabel, sunsetTimeLabel: self.sunsetTimeLabel, iconImageView: self.iconImageView)
     }
     
     func setStackView() {
