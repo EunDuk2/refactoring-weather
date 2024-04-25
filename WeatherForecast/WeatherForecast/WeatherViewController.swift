@@ -17,7 +17,6 @@ protocol WeatherDetailPresentable {
 class WeatherViewController: UIViewController, WeatherViewDelegate {
     private var weatherJSON: WeatherJSON?
     private var tempUnit: TempUnit = .metric
-    private let imageChache: NSCache<NSString, UIImage> = NSCache()
     private let dateFormatter: DateFormatter = {
         let formatter: DateFormatter = DateFormatter()
         formatter.locale = .init(identifier: "ko_KR")
@@ -26,9 +25,11 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     }()
     
     private let presentable: WeatherDetailPresentable
+    private let imageManager: ImageManager
     
-    init(presentable: WeatherDetailPresentable) {
+    init(presentable: WeatherDetailPresentable, imageManager: ImageManager) {
         self.presentable = presentable
+        self.imageManager = imageManager
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -57,18 +58,15 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     
     private func setImageFromURL(icon: String, imageView: UIImageView) {
         let urlString: String = "https://openweathermap.org/img/wn/\(icon)@2x.png"
-
-        if let image = imageChache.object(forKey: urlString as NSString) {
+        
+        if let image = imageManager.getImageChache(forKey: urlString) {
             imageView.image = image
         }
-
         Task {
-            guard let url: URL = URL(string: urlString),
-                  let (data, _) = try? await URLSession.shared.data(from: url),
-                  let image: UIImage = UIImage(data: data) else {
+            guard let image = await imageManager.downloadImage(urlString: urlString) else {
                 return
             }
-            imageChache.setObject(image, forKey: urlString as NSString)
+            imageManager.setImageChache(image: image, forKey: urlString)
             imageView.image = image
         }
     }

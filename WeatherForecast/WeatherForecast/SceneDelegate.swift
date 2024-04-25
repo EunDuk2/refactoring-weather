@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let scene: UIWindowScene = (scene as? UIWindowScene) else { return }
         
-        let viewController: WeatherViewController = WeatherViewController(presentable: WeatherDetailViewController())
+        let viewController: WeatherViewController = WeatherViewController(presentable: WeatherDetailViewController(), imageManager: ImageManager())
         let navigationController: UINavigationController = UINavigationController(rootViewController: viewController)
         navigationController.navigationBar.prefersLargeTitles = true
         navigationController.navigationBar.tintColor = .black
