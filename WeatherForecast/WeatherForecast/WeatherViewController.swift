@@ -39,12 +39,11 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        refresh()
     }
     
     override func loadView() {
         view = WeatherView(delegate: self)
-        refresh()
     }
     
     func setTitle(titleText: String) {
