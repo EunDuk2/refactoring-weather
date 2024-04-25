@@ -5,7 +5,6 @@
 //  Created by EUNSUNG on 4/21/24.
 //
 
-import Foundation
 import UIKit
 
 protocol WeatherDetailViewDelegate {
