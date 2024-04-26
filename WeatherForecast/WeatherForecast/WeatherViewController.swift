@@ -10,13 +10,13 @@ import UIKit
 protocol WeatherDetailPresentable {
     func setWeatherForecastInfo(weatherForecaseInfo: WeatherForecastInfo?)
     func setCityInfo(cityInfo: City?)
-    func setTempUnit(tempUnit: TempUnit)
+    func setTemperature(temperature: Temperature)
     func showDetailViewController(on navigationController: UINavigationController?)
 }
 
 class WeatherViewController: UIViewController, WeatherViewDelegate {
     private var weatherJSON: WeatherJSON?
-    private var tempUnit: TempUnit = .metric
+    private var temperature: Temperature
     private let dateFormatter: DateFormatter = {
         let formatter: DateFormatter = DateFormatter()
         formatter.locale = .init(identifier: "ko_KR")
@@ -27,9 +27,10 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     private let presentable: WeatherDetailPresentable
     private let imageManager: ImageManager
     
-    init(presentable: WeatherDetailPresentable, imageManager: ImageManager) {
+    init(presentable: WeatherDetailPresentable, imageManager: ImageManager, temperature: Temperature = MetricTemperature()) {
         self.presentable = presentable
         self.imageManager = imageManager
+        self.temperature = temperature
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -76,8 +77,10 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     }
     
     func changeTempUnit() {
-        tempUnit = tempUnit == .imperial ? .metric : .imperial
-        navigationItem.rightBarButtonItem?.title = tempUnit == .imperial ? "화씨" : "섭씨"
+        temperature = temperature as? MetricTemperature == nil ? MetricTemperature() : ImperialTemperature()
+        navigationItem.rightBarButtonItem?.title = temperature.unitString
+//        tempUnit = tempUnit == .imperial ? .metric : .imperial
+//        navigationItem.rightBarButtonItem?.title = tempUnit == .imperial ? "화씨" : "섭씨"
     }
     
     func refresh() {
@@ -102,7 +105,8 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
         
         cell.weatherLabel.text = weatherForecastInfo.weather.main
         cell.descriptionLabel.text = weatherForecastInfo.weather.description
-        cell.temperatureLabel.text = "\(weatherForecastInfo.main.temp)\(tempUnit.expression)"
+        cell.temperatureLabel.text = "\(temperature.getTemperature(temp: weatherForecastInfo.main.temp))\(temperature.unit)"
+//        cell.temperatureLabel.text = "\(weatherForecastInfo.main.temp)\(tempUnit.expression)"
         cell.dateLabel.text = convertTimeToDateString(timeInterval: weatherForecastInfo.dt)
         setImageFromURL(icon: weatherForecastInfo.weather.icon, imageView: cell.weatherIcon)
 
@@ -114,7 +118,7 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
         
         presentable.setWeatherForecastInfo(weatherForecaseInfo: weatherJSON?.weatherForecast[indexPath.row])
         presentable.setCityInfo(cityInfo: weatherJSON?.city)
-        presentable.setTempUnit(tempUnit: tempUnit)
+        presentable.setTemperature(temperature: temperature)
         presentable.showDetailViewController(on: navigationController)
     }
 }

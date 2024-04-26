@@ -22,8 +22,31 @@ class WeatherForecastInfo: Decodable {
 
 // MARK: - MainClass
 class MainInfo: Decodable {
+    //let temp: Temperature
     let temp, feelsLike, tempMin, tempMax: Double
     let pressure, seaLevel, grndLevel, humidity, pop: Double
+}
+
+protocol Temperature {
+    var unit: String { get }
+    var unitString: String { get }
+    func getTemperature(temp: Double) -> Double
+}
+
+struct MetricTemperature: Temperature {
+    var unit: String = "℃"
+    var unitString: String = "화씨"
+    func getTemperature(temp: Double) -> Double {
+        return temp
+    }
+}
+
+struct ImperialTemperature: Temperature {
+    var unit: String = "℉"
+    var unitString: String = "섭씨"
+    func getTemperature(temp: Double) -> Double {
+        return temp / 2 // 화씨 임시 로직
+    }
 }
 
 // MARK: - Weather
@@ -50,13 +73,13 @@ class Coord: Decodable {
 }
 
 // MARK: - Temperature Unit
-enum TempUnit: String {
-    case metric, imperial
-    var expression: String {
-        switch self {
-        case .metric: return "℃"
-        case .imperial: return "℉"
-        }
-    }
-}
+//enum TempUnit: String {
+//    case metric, imperial
+//    var expression: String {
+//        switch self {
+//        case .metric: return "℃"
+//        case .imperial: return "℉"
+//        }
+//    }
+//}
 

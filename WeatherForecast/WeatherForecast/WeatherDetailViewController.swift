@@ -10,7 +10,7 @@ class WeatherDetailViewController: UIViewController, WeatherDetailViewDelegate, 
     
     var weatherForecastInfo: WeatherForecastInfo?
     var cityInfo: City?
-    var tempUnit: TempUnit = .metric
+    var temperature: Temperature?
     
     let dateFormatter: DateFormatter = {
         let formatter: DateFormatter = DateFormatter()
@@ -64,10 +64,11 @@ class WeatherDetailViewController: UIViewController, WeatherDetailViewDelegate, 
         
         weatherGroupLabel.text = listInfo.weather.main
         weatherDescriptionLabel.text = listInfo.weather.description
-        temperatureLabel.text = "현재 기온 : \(listInfo.main.temp)\(tempUnit.expression)"
-        feelsLikeLabel.text = "체감 기온 : \(listInfo.main.feelsLike)\(tempUnit.expression)"
-        maximumTemperatureLable.text = "최고 기온 : \(listInfo.main.tempMax)\(tempUnit.expression)"
-        minimumTemperatureLable.text = "최저 기온 : \(listInfo.main.tempMin)\(tempUnit.expression)"
+        guard let temperature = temperature else {return}
+        temperatureLabel.text = "현재 기온 : \(temperature.getTemperature(temp: listInfo.main.temp))\(temperature.unit)"
+        feelsLikeLabel.text = "체감 기온 : \(listInfo.main.feelsLike)\(temperature.unit)"
+        maximumTemperatureLable.text = "최고 기온 : \(listInfo.main.tempMax)\(temperature.unit)"
+        minimumTemperatureLable.text = "최저 기온 : \(listInfo.main.tempMin)\(temperature.unit)"
         popLabel.text = "강수 확률 : \(listInfo.main.pop * 100)%"
         humidityLabel.text = "습도 : \(listInfo.main.humidity)%"
         
@@ -86,8 +87,8 @@ class WeatherDetailViewController: UIViewController, WeatherDetailViewDelegate, 
         self.cityInfo = cityInfo
     }
     
-    func setTempUnit(tempUnit: TempUnit) {
-        self.tempUnit = tempUnit
+    func setTemperature(temperature: Temperature) {
+        self.temperature = temperature
     }
     
     func showDetailViewController(on navigationController: UINavigationController?) {
