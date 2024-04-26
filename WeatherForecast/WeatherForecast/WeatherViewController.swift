@@ -76,15 +76,8 @@ class WeatherViewController: UIViewController, WeatherViewDelegate {
     }
     
     func changeTempUnit() {
-        switch tempUnit {
-        case .imperial:
-            tempUnit = .metric
-            navigationItem.rightBarButtonItem?.title = "섭씨"
-        case .metric:
-            tempUnit = .imperial
-            navigationItem.rightBarButtonItem?.title = "화씨"
-        }
-        
+        tempUnit = tempUnit == .imperial ? .metric : .imperial
+        navigationItem.rightBarButtonItem?.title = tempUnit == .imperial ? "화씨" : "섭씨"
     }
     
     func refresh() {
